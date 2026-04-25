@@ -33,7 +33,7 @@ This workspace contains **Prime Intellect Verifiers environments** for evaluatin
 
 ```bash
 # Set up API key for LLM-as-judge (local envs use OpenRouter)
-export OPEN_ROUTER_API_KEY="your-key-here"
+export OPENROUTER_API_KEY="your-key-here"
 ```
 
 ### Custom API endpoints (OpenAI-compatible chat)
@@ -80,7 +80,7 @@ type = "openai_chat_completions"
 prime eval run mcp-tox -m or-gpt-4.1-mini -n 3 -r 1
 ```
 
-**Note on the judge model:** `mcp-tox`, `mcp-safety`, and `open-prompt-injection` make a separate judge call hardcoded to `https://openrouter.ai/api/v1` and reading `OPEN_ROUTER_API_KEY` (with underscore) by default. Override the model/key via `-a '{"judge_model": "openai/gpt-4o-mini", "judge_api_key_var": "OPENROUTER_API_KEY"}'`.
+**Note on the judge model:** `mcp-tox`, `mcp-safety`, and `open-prompt-injection` make a separate judge call hardcoded to `https://openrouter.ai/api/v1` and reading `OPENROUTER_API_KEY` by default (same env var the `-p openrouter` shorthand uses). Override per-run via `-a '{"judge_model": "openai/gpt-4o-mini", "judge_api_key_var": "MY_KEY_VAR"}'`.
 
 ### Running local benchmarks (mcp-tox, mcp-safety, open-prompt-injection)
 
@@ -189,7 +189,7 @@ All three local environments follow the same pattern:
 - Primary metric: `attack_resistance` (1.0 = resisted, 0.0 = complied)
 - Secondary metrics logged but not scored (e.g., `attack_detected`, `task_accuracy`)
 - Each environment exports `load_environment(**kwargs) -> vf.Environment`
-- API key validated early via `vf.ensure_keys(["OPEN_ROUTER_API_KEY"])`
+- API key validated early via `vf.ensure_keys(["OPENROUTER_API_KEY"])`
 
 ## Reference Data
 

@@ -97,7 +97,7 @@ Just return the letter "A", "B", or "C", with no text around it.
 
 def load_environment(
     judge_model: str = "openai/gpt-5.4-mini",
-    judge_api_key_var: str = "OPEN_ROUTER_API_KEY",
+    judge_api_key_var: str = "OPENROUTER_API_KEY",
     data_path: str | None = None,
     server_name: str | None = None,
     security_risk: str | None = None,

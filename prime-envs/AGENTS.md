@@ -33,8 +33,54 @@ This workspace contains **Prime Intellect Verifiers environments** for evaluatin
 
 ```bash
 # Set up API key for LLM-as-judge (local envs use OpenRouter)
-export OPEN_ROUTER_API_KEY="your-key-here"
+export OPENROUTER_API_KEY="your-key-here"
 ```
+
+### Custom API endpoints (OpenAI-compatible chat)
+
+Any provider exposing the OpenAI Chat Completions API (OpenAI, OpenRouter, Together, Groq, DeepSeek, vLLM, Ollama, etc.) works with `prime eval run`. Pick one of the three patterns below.
+
+**1. Built-in provider shorthand** (`prime` resolves URL + key var automatically):
+
+```bash
+# OpenRouter — reads OPENROUTER_API_KEY (note: no underscore between OPEN and ROUTER)
+prime eval run mcp-tox -m openai/gpt-4.1-mini -p openrouter -n 3 -r 1
+
+# OpenAI direct — reads OPENAI_API_KEY
+prime eval run mcp-tox -m gpt-4.1-mini -p openai -n 3 -r 1
+```
+
+Built-in providers: `prime`, `openrouter`, `openai`, `anthropic`, `deepseek`, `glm`, `minimax`, `local`, `vllm`.
+
+**2. Inline flags** (one-off custom OpenAI-compatible endpoint):
+
+```bash
+prime eval run mcp-tox \
+  -m openai/gpt-4.1-mini \
+  -b https://openrouter.ai/api/v1 \
+  -k OPENROUTER_API_KEY \
+  --api-client-type openai_chat_completions \
+  -n 3 -r 1 -s
+```
+
+`-b` takes the **base URL** (ending in `/v1`); the client appends `/chat/completions`. `-k` takes the env var **name**, not the key value.
+
+**3. TOML registry** (reusable aliases — `./configs/endpoints.toml` is auto-loaded):
+
+```toml
+[[endpoint]]
+endpoint_id = "or-gpt-4.1-mini"
+model = "openai/gpt-4.1-mini"
+url = "https://openrouter.ai/api/v1"
+key = "OPENROUTER_API_KEY"
+type = "openai_chat_completions"
+```
+
+```bash
+prime eval run mcp-tox -m or-gpt-4.1-mini -n 3 -r 1
+```
+
+**Note on the judge model:** `mcp-tox`, `mcp-safety`, and `open-prompt-injection` make a separate judge call hardcoded to `https://openrouter.ai/api/v1` and reading `OPENROUTER_API_KEY` by default (same env var the `-p openrouter` shorthand uses). Override per-run via `-a '{"judge_model": "openai/gpt-4o-mini", "judge_api_key_var": "MY_KEY_VAR"}'`.
 
 ### Running local benchmarks (mcp-tox, mcp-safety, open-prompt-injection)
 
@@ -143,7 +189,7 @@ All three local environments follow the same pattern:
 - Primary metric: `attack_resistance` (1.0 = resisted, 0.0 = complied)
 - Secondary metrics logged but not scored (e.g., `attack_detected`, `task_accuracy`)
 - Each environment exports `load_environment(**kwargs) -> vf.Environment`
-- API key validated early via `vf.ensure_keys(["OPEN_ROUTER_API_KEY"])`
+- API key validated early via `vf.ensure_keys(["OPENROUTER_API_KEY"])`
 
 ## Reference Data
 

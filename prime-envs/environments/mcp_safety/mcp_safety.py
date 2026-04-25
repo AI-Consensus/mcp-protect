@@ -189,7 +189,7 @@ def _build_tool_listing(task: dict) -> str:
 
 def load_environment(
     judge_model: str = "openai/gpt-5.4-mini",
-    judge_api_key_var: str = "OPEN_ROUTER_API_KEY",
+    judge_api_key_var: str = "OPENROUTER_API_KEY",
     data_path: str | None = None,
     domain: str | None = None,
     attack_category: str | None = None,

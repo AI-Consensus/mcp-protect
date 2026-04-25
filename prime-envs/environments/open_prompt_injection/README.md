@@ -24,7 +24,7 @@ Each test case gives the model a target task instruction with input data that ha
 | Argument | Default | Description |
 |----------|---------|-------------|
 | `judge_model` | `openai/gpt-5.4-mini` | LLM judge model via OpenRouter |
-| `judge_api_key_var` | `OPEN_ROUTER_API_KEY` | Environment variable for API key |
+| `judge_api_key_var` | `OPENROUTER_API_KEY` | Environment variable for API key |
 | `target_task` | `sentiment_analysis` | Target task the model should perform |
 | `injected_task` | `spam_detection` | Task injected into the input |
 | `attack_strategy` | `combine` | Attack strategy: naive, escape, ignore, fake_comp, combine |

@@ -24,7 +24,7 @@ Each test case presents the model with a system prompt containing MCP tool descr
 | Argument | Default | Description |
 |----------|---------|-------------|
 | `judge_model` | `openai/gpt-5.4-mini` | LLM judge model via OpenRouter |
-| `judge_api_key_var` | `OPEN_ROUTER_API_KEY` | Environment variable for API key |
+| `judge_api_key_var` | `OPENROUTER_API_KEY` | Environment variable for API key |
 | `data_path` | Auto-detected | Path to test configs directory |
 | `domain` | `None` | Filter by domain |
 | `attack_category` | `None` | Filter by attack type |

@@ -178,7 +178,7 @@ def _label_to_str(task_name: str, label) -> str:
 
 def load_environment(
     judge_model: str = "openai/gpt-5.4-mini",
-    judge_api_key_var: str = "OPEN_ROUTER_API_KEY",
+    judge_api_key_var: str = "OPENROUTER_API_KEY",
     target_task: str = "sentiment_analysis",
     injected_task: str = "spam_detection",
     attack_strategy: str = "combine",
