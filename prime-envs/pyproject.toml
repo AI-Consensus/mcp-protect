@@ -1,9 +1,22 @@
 [project]
 name = "prime-envs"
 version = "0.1.0"
-description = "Add your description here"
+description = "MCP-Protect benchmark suite — Verifiers environments for evaluating LLM safety"
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.11"
 dependencies = [
     "verifiers>=0.1.11",
+    "mcp-tox",
+    "mcp-safety",
+    "open-prompt-injection",
+    "agent-dojo",
 ]
+
+[tool.uv.workspace]
+members = ["environments/*"]
+
+[tool.uv.sources]
+mcp-tox = { workspace = true }
+mcp-safety = { workspace = true }
+open-prompt-injection = { workspace = true }
+agent-dojo = { workspace = true }
