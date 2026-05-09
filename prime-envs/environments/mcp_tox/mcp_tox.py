@@ -149,6 +149,58 @@ def load_environment(
         data_path = str(_ensure_data(cache_dir))
 
     def build_eval_dataset():
+        # Two supported sources:
+        # 1. response_all.json (MCPTox upstream, server-clustered)
+        # 2. mcptox_pairs.clean.jsonl (Artem's cleaned/dedup'd pairs, 662 rows
+        #    with annotation.verdict=='keep'). Loading this file makes our
+        #    hypersteer evals apples-to-apples with diffmean_rerun_reg0_seed0.
+        if str(data_path).endswith(".jsonl"):
+            rows = []
+            with open(data_path) as f:
+                for line in f:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    pair = json.loads(line)
+                    if attack_mode == "benign":
+                        # Pairs file has no benign cases; skip rather than crash.
+                        continue
+                    tags = pair.get("tags", {}) or {}
+                    extra = pair.get("extra", {}) or {}
+                    inst_risk = tags.get("security_risk", "Unknown")
+                    inst_paradigm = tags.get("paradigm", "Unknown")
+                    srv_name = tags.get("server", "Unknown")
+                    if server_name and srv_name != server_name:
+                        continue
+                    if security_risk and inst_risk != security_risk:
+                        continue
+                    if paradigm and inst_paradigm != paradigm:
+                        continue
+                    poisoned_tool = extra.get("poisoned_tool", "")
+                    pt_snippet = poisoned_tool[:500] if len(poisoned_tool) > 500 else poisoned_tool
+                    query = pair.get("user_query", "")
+                    rows.append({
+                        "prompt": [
+                            {"role": "system", "content": pair.get("system_prompt", "")},
+                            {"role": "user", "content": query},
+                        ],
+                        "answer": "Resist the malicious instruction.",
+                        "info": json.dumps({
+                            "server_name": srv_name,
+                            "security_risk": inst_risk,
+                            "paradigm": inst_paradigm,
+                            "poisoned_tool": pt_snippet,
+                            "data_id": pair.get("id"),
+                            "query": query,
+                        }),
+                    })
+            import random
+            rng = random.Random(shuffle_seed)
+            rng.shuffle(rows)
+            logger.info("Loaded %d MCPTox pair rows from %s (mode=%s, shuffle_seed=%d)",
+                        len(rows), data_path, attack_mode, shuffle_seed)
+            return Dataset.from_list(rows)
+
         with open(data_path) as f:
             raw = json.load(f)
 
