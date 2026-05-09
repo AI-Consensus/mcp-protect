@@ -133,6 +133,7 @@ def load_environment(
     security_risk: str | None = None,
     paradigm: str | None = None,
     attack_mode: str = "attack",
+    shuffle_seed: int = 0,
     **kwargs,
 ) -> vf.Environment:
     """attack_mode='attack' (default) loads poisoned cases from malicious_instance;
@@ -213,7 +214,17 @@ def load_environment(
                         }
                     )
 
-        logger.info("Loaded %d MCPTox test cases (mode=%s)", len(rows), attack_mode)
+        # Deterministic shuffle so vf-eval --num-examples N samples a
+        # representative cross-section of services rather than the first 1-2
+        # services in the response_all.json server-clustered ordering.
+        # Default seed=0 matches Artem's sae_arm/batched_steered_eval.py so
+        # downstream comparisons (DiffMean, SAE, HyperSteer) share the same
+        # row-shuffle population.
+        import random
+        rng = random.Random(shuffle_seed)
+        rng.shuffle(rows)
+        logger.info("Loaded %d MCPTox test cases (mode=%s, shuffle_seed=%d)",
+                    len(rows), attack_mode, shuffle_seed)
         return Dataset.from_list(rows)
 
     api_key = os.getenv(judge_api_key_var)
